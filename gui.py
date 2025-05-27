@@ -16,6 +16,8 @@ import sys
 
 from fees_gui import FeesManagementGUI
 from organization_gui import OrganizationManagementGUI
+from committee_gui import CommitteeGUI
+
 
 def capture_output(func, *args):
     buffer = io.StringIO()
@@ -46,7 +48,7 @@ class MainApp(tk.Tk):
         self.fees_gui = FeesManagementGUI(self.content_frame, self.clear_content, self.create_styled_button)
 
         self.organization_gui = OrganizationManagementGUI(self.content_frame, self.clear_content, self.create_styled_button)
-
+        
     def setup_styles(self):
         """Configure modern styling for the application"""
         # Configure ttk styles
@@ -137,6 +139,7 @@ class MainApp(tk.Tk):
             (" Delete Member", self.delete_member, "#e67e22"),
             (" Organization Management", self.show_organization_management, "#27ae60"),
             (" Fees Management", self.show_fees_management, "#16a085"), 
+            (" Committee Management", self.show_committee_management, "#17a2b8"),
             (" Generate Report", self.show_report_ui, "#9b59b6"),
             (" Exit", self.quit, "#95a5a6")
         ]
@@ -778,6 +781,16 @@ class MainApp(tk.Tk):
     def show_organization_management(self):
         """Show organization management interface"""
         self.organization_gui.show_organization_management()
+
+    def show_committee_management(self):
+        """Show organization management interface"""
+        self.clear_content()
+        self.committee_gui = CommitteeGUI(self.content_frame, self.clear_content, self.create_styled_button)
+
+    def clear_content(self):
+        for widget in self.content_frame.winfo_children():
+            widget.destroy()
+
 
     def show_report_ui(self):
         self.clear_content()
