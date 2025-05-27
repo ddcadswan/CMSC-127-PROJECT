@@ -1,7 +1,7 @@
 from tkinter.simpledialog import askstring
 import mysql.connector
 from database.connection import connect_to_server
-
+from mysql.connector import Error
 import tkinter as tk
 from tkinter import messagebox, ttk
 from functions.operations.reports import (
@@ -13,6 +13,8 @@ from functions.operations.reports import (
 from functions.operations.member_ops import update_member
 import io
 import sys
+
+from fees_gui import FeesManagementGUI
 
 def capture_output(func, *args):
     buffer = io.StringIO()
@@ -39,6 +41,9 @@ class MainApp(tk.Tk):
         
         # Create main content area
         self.create_main_content()
+
+        self.fees_gui = FeesManagementGUI(self.content_frame, self.clear_content, self.create_styled_button)
+
 
     def setup_styles(self):
         """Configure modern styling for the application"""
@@ -126,8 +131,9 @@ class MainApp(tk.Tk):
             (" Insert Sample Data", self.insert_sample_data, "#f39c12"),
             (" Add Member", self.add_member, "#27ae60"),
             (" Update Member", self.update_member, "#17a2b8"),
-            (" Search Options", self.search_options, "#3498db"),
+            (" Search Options", self.search_options, "#9b59b6"),
             (" Delete Member", self.delete_member, "#e67e22"),
+            (" Fees Management", self.show_fees_management, "#16a085"), 
             (" Generate Report", self.show_report_ui, "#9b59b6"),
             (" Exit", self.quit, "#95a5a6")
         ]
@@ -684,6 +690,25 @@ class MainApp(tk.Tk):
         button_frame = tk.Frame(self.content_frame, bg='white')
         button_frame.pack(padx=30)
         self.create_styled_button(button_frame, "Search", search, "#3498db")
+
+    def show_fees_management(self):
+        """Show the fees management interface"""
+        self.fees_gui.show_fees_menu()
+
+    def clear_content(self):
+        """Clear the content frame"""
+        for widget in self.content_frame.winfo_children():
+            widget.destroy()
+
+    def create_styled_button(self, parent, text, command, color="#4a90e2"):
+        """Create a styled button (if needed by fees GUI)"""
+        btn = tk.Button(parent, text=text, 
+                    font=('Segoe UI', 10, 'bold'),
+                    bg=color, fg='white',
+                    relief='flat', bd=0,
+                    cursor='hand2',
+                    command=command)
+        return btn
 
     def delete_member(self):
         self.clear_content()

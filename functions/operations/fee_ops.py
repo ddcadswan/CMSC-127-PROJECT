@@ -463,9 +463,9 @@ def view_member_fee_status():
                     total_pending += amount
             
             print("=" * 80)
-            print(f"Total Paid: ${total_paid:.2f}")
-            print(f"Total Pending: ${total_pending:.2f}")
-            print(f"Grand Total: ${total_paid + total_pending:.2f}")
+            print(f"Total Paid: P{total_paid:.2f}")
+            print(f"Total Pending: P{total_pending:.2f}")
+            print(f"Grand Total: P{total_paid + total_pending:.2f}")
             
         except Error as err:
             print(f"Error fetching member fee status: {err}")
