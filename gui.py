@@ -1,9 +1,10 @@
 from tkinter.simpledialog import askstring
 import mysql.connector
+from database.connection import connect_to_server
 
 import tkinter as tk
 from tkinter import messagebox
-from project import (
+from functions.operations.reports import (
     view_member_count, view_all_members, view_members_unpaid_fees,
     view_member_orgs, view_member_unpaid_fees, list_active_members,
     view_members_with_unpaid_or_late, view_committee_roles,
@@ -217,14 +218,9 @@ class MainApp(tk.Tk):
             sort_by = sort_entry.get()
             if org_id and sort_by:
                 try:
-                    from project import sorted_by
+                    from functions.operations.reports import sorted_by
                     query, params = sorted_by(org_id, sort_by)
-                    conn = mysql.connector.connect(
-                        host="localhost",
-                        user="student_admin",
-                        password="iLove127!",
-                        database="student_org_database"
-                    )
+                    conn = connect_to_server("student_org_database")
                     cursor = conn.cursor()
                     cursor.execute(query, params)
                     results = cursor.fetchall()
@@ -259,12 +255,7 @@ class MainApp(tk.Tk):
             year = year_entry.get()
             if semester and year:
                 try:
-                    conn = mysql.connector.connect(
-                        host="localhost",
-                        user="student_admin",
-                        password="iLove127!",
-                        database="student_org_database"
-                    )
+                    conn = connect_to_server("student_org_database")
                     cursor = conn.cursor()
                     query = """
                         SELECT m.first_name, m.last_name, o.org_name, f.status, f.amount, f.semester, f.academic_year
@@ -303,12 +294,7 @@ class MainApp(tk.Tk):
             membership_id = id_entry.get()
             if membership_id:
                 try:
-                    conn = mysql.connector.connect(
-                        host="localhost",
-                        user="student_admin",
-                        password="iLove127!",
-                        database="student_org_database"
-                    )
+                    conn = connect_to_server("student_org_database")
                     cursor = conn.cursor()
                     query = """
                         SELECT m.first_name, m.last_name, o.org_name
@@ -344,12 +330,7 @@ class MainApp(tk.Tk):
             student_number = student_entry.get()
             if student_number:
                 try:
-                    conn = mysql.connector.connect(
-                        host="localhost",
-                        user="student_admin",
-                        password="iLove127!",
-                        database="student_org_database"
-                    )
+                    conn = connect_to_server("student_org_database")
                     cursor = conn.cursor()
                     query = """
                         SELECT m.first_name, m.last_name, o.org_name, f.fee_name, f.amount, f.status, f.semester, f.academic_year
