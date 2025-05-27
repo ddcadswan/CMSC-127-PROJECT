@@ -501,7 +501,7 @@ class MainApp(tk.Tk):
         options = [
             ("1. View number of members per organization", lambda: self.run_report(view_member_count)),
             ("2. View all members of an organization", self.report_members_by_org),
-            ("3. View members with unpaid or late fees (by semester & year)", self.report_unpaid_by_semester),
+            ("3. View members with unpaid or late fees (by semester & academic year)", self.report_unpaid_by_semester),
             ("4. View organizations of a member (by membership ID)", self.report_member_orgs),
             ("5. View a member's unpaid fees (by student number)", self.report_unpaid_by_student),
             ("6. List all active members", lambda: self.run_report(list_active_members)),
@@ -586,6 +586,9 @@ class MainApp(tk.Tk):
         button_frame = tk.Frame(self.content_frame, bg='white')
         button_frame.pack(padx=30)
         self.create_styled_button(button_frame, "Run Report", run_custom_query, "#9b59b6")
+        # back button
+        tk.Button(self.content_frame, text="← Back", font=("Arial", 10, "bold"), bg="#f0f0f0",
+          relief="groove", command=self.show_report_ui).pack(pady=(5, 15))
         
         # Output area
         output_frame = tk.Frame(self.content_frame, bg='white')
@@ -640,6 +643,9 @@ class MainApp(tk.Tk):
         button_frame = tk.Frame(self.content_frame, bg='white')
         button_frame.pack(padx=30)
         self.create_styled_button(button_frame, "Run Report", run_query, "#9b59b6")
+        # back button
+        tk.Button(self.content_frame, text="← Back", font=("Arial", 10, "bold"), bg="#f0f0f0",
+          relief="groove", command=self.show_report_ui).pack(pady=(5, 15))
         
         # Output area
         output_frame = tk.Frame(self.content_frame, bg='white')
@@ -690,6 +696,9 @@ class MainApp(tk.Tk):
         button_frame = tk.Frame(self.content_frame, bg='white')
         button_frame.pack(padx=30)
         self.create_styled_button(button_frame, "Run Report", run_query, "#9b59b6")
+        # back button
+        tk.Button(self.content_frame, text="← Back", font=("Arial", 10, "bold"), bg="#f0f0f0",
+          relief="groove", command=self.show_report_ui).pack(pady=(5, 15))
         
         # Output area
         output_frame = tk.Frame(self.content_frame, bg='white')
@@ -741,6 +750,9 @@ class MainApp(tk.Tk):
         button_frame = tk.Frame(self.content_frame, bg='white')
         button_frame.pack(padx=30)
         self.create_styled_button(button_frame, "Run Report", run_query, "#9b59b6")
+        # back button
+        tk.Button(self.content_frame, text="← Back", font=("Arial", 10, "bold"), bg="#f0f0f0",
+          relief="groove", command=self.show_report_ui).pack(pady=(5, 15))
         
         # Output area
         output_frame = tk.Frame(self.content_frame, bg='white')
