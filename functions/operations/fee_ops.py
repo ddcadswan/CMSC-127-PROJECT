@@ -290,7 +290,7 @@ def view_detailed_fee_breakdown(org_id, org_name):
         for record in details:
             payment_id, first_name, last_name, student_num, status, amount, due_date = record
             full_name = f"{first_name} {last_name}"
-            print(f"{payment_id:<6} {full_name:<25} {student_num:<12} {status:<10} ${amount:<9.2f}")
+            print(f"{payment_id:<6} {full_name:<25} {student_num:<12} {status:<10} P{amount:<9.2f}")
         
     except mysql.connector.Error as err:
         print(f"Error fetching fee details: {err}")
@@ -345,7 +345,7 @@ def delete_fee_from_organization():
             print("-" * 60)
             for i, fee in enumerate(fees, 1):
                 fee_name, academic_year, semester, amount, due_date = fee
-                print(f"{i}. {fee_name} | {academic_year} {semester} | ${amount:.2f} | Due: {due_date}")
+                print(f"{i}. {fee_name} | {academic_year} {semester} | P{amount:.2f} | Due: {due_date}")
             print("-" * 60)
             
             choice = int(input("Enter fee number to delete (0 to cancel): "))
@@ -455,7 +455,7 @@ def view_member_fee_status():
                     current_org = org_name
                 
                 status_symbol = "✓" if status == 'Paid' else "✗"
-                print(f"{status_symbol} {fee_name} | {academic_year} {semester} | ${amount:.2f} | {status} | Due: {due_date}")
+                print(f"{status_symbol} {fee_name} | {academic_year} {semester} | P{amount:.2f} | {status} | Due: {due_date}")
                 
                 if status == 'Paid':
                     total_paid += amount
@@ -512,7 +512,7 @@ def update_fee_payment_status():
             print(f"Student: {first_name} {last_name} ({student_num})")
             print(f"Organization: {org_name}")
             print(f"Fee: {fee_name}")
-            print(f"Amount: ${amount:.2f}")
+            print(f"Amount: P{amount:.2f}")
             print(f"Current Status: {current_status}")
             print(f"Due Date: {due_date}")
             
