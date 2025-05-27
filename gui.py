@@ -320,7 +320,7 @@ class MainApp(tk.Tk):
     def add_member(self):
         self.clear_content()
         
-        labels = ["Student Number", "First Name", "Last Name", "Gender"]
+        labels = ["Student Number", "First Name", "Last Name", "Gender", "Batch(year)", "Degree Program", "Status(active/inactive)", "Role"]
         entries = self.create_form_section("Add New Member", labels)
 
         def submit():
@@ -335,8 +335,8 @@ class MainApp(tk.Tk):
                     )
                     cursor = conn.cursor()
                     cursor.execute("""
-                        INSERT INTO member (student_number, first_name, last_name, gender)
-                        VALUES (%s, %s, %s, %s);
+                        INSERT INTO member (student_number, first_name, last_name, gender, batch, degree_program, status, role)
+                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s);
                     """, tuple(values))
                     conn.commit()
                     conn.close()
