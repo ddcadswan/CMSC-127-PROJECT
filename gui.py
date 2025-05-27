@@ -68,7 +68,7 @@ class MainApp(tk.Tk):
         self.clear_content()
         tk.Label(self.content_frame, text="Add New Member", font=("Arial", 14, "bold")).pack(pady=5)
 
-        labels = ["Student Number", "First Name", "Last Name", "Gender"]
+        labels = ["Student Number", "First Name", "Last Name", "Gender", "Batch(year)", "Degree Program", "Status(active/inactive)", "Role"]
         entries = {}
         for label in labels:
             tk.Label(self.content_frame, text=label).pack()
@@ -88,8 +88,8 @@ class MainApp(tk.Tk):
                     )
                     cursor = conn.cursor()
                     cursor.execute("""
-                        INSERT INTO member (student_number, first_name, last_name, gender)
-                        VALUES (%s, %s, %s, %s);
+                        INSERT INTO member (student_number, first_name, last_name, gender, batch, degree_program, status, role)
+                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s);
                     """, tuple(values))
                     conn.commit()
                     conn.close()
