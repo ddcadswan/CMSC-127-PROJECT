@@ -110,3 +110,66 @@ def search_members():
     finally:
         cursor.close()
         conn.close()
+
+def update_member():
+    conn = connect_to_server("student_org_database")
+    if not conn:
+        return
+    cursor = conn.cursor(dictionary=True)
+    try:
+        print("Update member by:")
+        print("1. Membership ID")
+        print("2. Student Number")
+        choice = input("Choose option 1 or 2: ").strip()
+
+        if choice == "1":
+            identifier_field = "membership_id"
+            identifier_value = input("Enter Membership ID: ").strip()
+        elif choice == "2":
+            identifier_field = "student_number"
+            identifier_value = input("Enter Student Number: ").strip()
+        else:
+            print("Invalid choice.")
+            return
+
+        # Fetch existing record
+        cursor.execute(f"SELECT * FROM member WHERE {identifier_field} = %s;", (identifier_value,))
+        member = cursor.fetchone()
+
+        if not member:
+            print("No member found with the given information.")
+            return
+
+        print("\nCurrent member details:")
+        for key, value in member.items():
+            print(f"{key}: {value}")
+
+        print("\nEnter new values (press Enter to keep current value):")
+        updated_fields = {}
+        for field in ["first_name", "last_name", "student_number", "gender", "batch", "degree_program", "status", "role"]:
+            current_value = member[field]
+            new_value = input(f"{field.replace('_', ' ').title()} [{current_value}]: ").strip()
+            if new_value:
+                # Convert batch to int if modified
+                updated_fields[field] = int(new_value) if field == "batch" else new_value
+
+        if not updated_fields:
+            print("No changes made.")
+            return
+
+        # Prepare update statement
+        set_clause = ", ".join(f"{field} = %s" for field in updated_fields.keys())
+        update_query = f"UPDATE member SET {set_clause} WHERE {identifier_field} = %s;"
+        params = list(updated_fields.values()) + [identifier_value]
+        cursor.execute(update_query, tuple(params))
+        conn.commit()
+
+        print("Member updated successfully!")
+
+    except mysql.connector.Error as e:
+        print("Error updating member:", e)
+    except ValueError:
+        print("Invalid input for batch. Please enter a valid year.")
+    finally:
+        cursor.close()
+        conn.close()
