@@ -330,21 +330,9 @@ class MainApp(tk.Tk):
 
     def add_member(self):
         self.clear_content()
-<<<<<<< HEAD
-        tk.Label(self.content_frame, text="Add New Member", font=("Arial", 14, "bold")).pack(pady=5)
-
-        labels = ["Student Number", "First Name", "Last Name", "Gender", "Batch(year)", "Degree Program", "Status(active/inactive)", "Role"]
-        entries = {}
-        for label in labels:
-            tk.Label(self.content_frame, text=label).pack()
-            entry = tk.Entry(self.content_frame)
-            entry.pack()
-            entries[label] = entry
-=======
         
         labels = ["Student Number", "First Name", "Last Name", "Gender", "Batch(year)", "Degree Program", "Status(active/inactive)", "Role"]
         entries = self.create_form_section("Add New Member", labels)
->>>>>>> 0abd8f2fa529f9632d28f17c3a900824bbe0e338
 
         def submit():
             values = [entries[label].get() for label in labels]
