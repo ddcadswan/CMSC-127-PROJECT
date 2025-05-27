@@ -8,7 +8,7 @@ student organization's operations, like memberships and finances.
 
 1. MySQL Setup Commands
 
-```sql
+sql
 -- Login to MySQL as root
 mysql -u root -p;
 
