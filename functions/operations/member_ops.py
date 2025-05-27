@@ -21,20 +21,111 @@ def add_member():
         degree_program = input("Degree Program: ").strip()
         status = input("Status (active/inactive): ").strip()
         role = input("Role: ").strip()
+        org_name = input("Name of organization: ").strip()
+        committee_input = input("Committee (leave blank for 'General Committee'): ").strip()
+        semester = input("Semester (e.g., '1st', '2nd'): ").strip()
+        academic_year = input("Academic Year (e.g., '2024–2025'): ").strip()
 
-        insert_query = """
+        # Use entered committee or default
+        committee_name = committee_input if committee_input else "General Committee"
+
+        # Insert into member table
+        insert_member_query = """
         INSERT INTO member (first_name, last_name, student_number, gender, batch, degree_program, status, role)
-        VALUES (%s, %s, %s, %s, %s, %s, %s, %s);
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
         """
-        cursor.execute(insert_query, (first_name, last_name, student_number, gender, batch, degree_program, status, role))
+        cursor.execute(insert_member_query, (
+            first_name, last_name, student_number, gender, batch, degree_program, status, role
+        ))
+        membership_id = cursor.lastrowid
+
+        # Get organization_id
+        org_query = "SELECT org_id FROM organization WHERE org_name LIKE %s"
+        cursor.execute(org_query, (f"%{org_name}%",))
+        org_row = cursor.fetchone()
+        if not org_row:
+            raise ValueError(f"Organization '{org_name}' not found.")
+        organization_id = org_row[0]
+
+        # Insert into membership table
+        cursor.execute(
+            "INSERT INTO membership (membership_id, organization_id) VALUES (%s, %s)",
+            (membership_id, organization_id)
+        )
+
+        
+        # === Assign to selected/default committee ===
+        cursor.execute("SELECT committee_id FROM committee WHERE committee_name = %s", (committee_name,))
+        committee = cursor.fetchone()
+        if committee:
+            committee_id = committee[0]
+        else:
+            cursor.execute("INSERT INTO committee (committee_name) VALUES (%s)", (committee_name,))
+            committee_id = cursor.lastrowid
+
+        insert_member_committee = """
+        INSERT INTO member_committee (membership_id, committee_id, organization_id, semester, academic_year, role)
+        VALUES (%s, %s, %s, %s, %s, %s)
+        """
+        cursor.execute(insert_member_committee, (
+            membership_id, committee_id, organization_id, semester, academic_year, role
+        ))
+
         conn.commit()
-        print("Member added successfully!")
+        print("Member added successfully with committee assignment.")
+
     except mysql.connector.Error as e:
         print("Error adding member:", e)
     finally:
         cursor.close()
         conn.close()
+def add_fee():
+    conn = connect_to_server("student_org_database")
+    if not conn:
+        return
+    cursor = conn.cursor()
+    try:
+        print("Add Fee")
+        student_number = input("Enter Student number: ").strip()
+        amount = input("Enter Amount: ").strip()
+        semester = input("Semester (e.g., '1st', '2nd'): ").strip()
+        academic_year = input("Academic Year (e.g., '2024–2025'): ").strip()
+        print(student_number)
+        # Retrieve the membership_id and organization_id from member and membership tables
+        query = """
+        SELECT m.membership_id, mem.organization_id
+        FROM member m
+        JOIN membership mem ON m.membership_id = mem.membership_id
+        WHERE m.student_number = %s;
+        """
+        cursor.execute(query, (student_number,))
+        result = cursor.fetchone()
+        print(result)
+        if not result:
+            print("No matching student found.")
+            return
 
+        membership_id, organization_id = result  # Unpack the result tuple
+
+        # Calculate the due date as current date + 30 days
+        due_date = (datetime.now() + timedelta(days=30)).date()
+        fee_name = "Membership Fee"
+        
+        # Insert fee query
+        insert_fee_query = """
+        INSERT INTO fee (status, amount, due_date, semester, fee_name, academic_year, membership_id, organization_id)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+        """
+        cursor.execute(insert_fee_query, (
+            "unpaid", amount, due_date, semester, fee_name, academic_year, membership_id, organization_id
+        ))
+        conn.commit()
+        print("Fee added successfully!")
+    except mysql.connector.Error as e:
+        print("Error adding fee:", e)
+    finally:
+        cursor.close()
+        conn.close()
 def delete_member():
     conn = connect_to_server("student_org_database")
     if not conn:
