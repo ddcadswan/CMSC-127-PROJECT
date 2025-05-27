@@ -2,7 +2,7 @@ import mysql.connector
 from database.connection import connect_to_server
 
 def add_member():
-print("\n--- Add Member ---")
+    print("\n--- Add Member ---")
     first_name = input("Enter first name: ").strip()
     last_name = input("Enter last name: ").strip()
     student_number = input("Enter student number: ").strip()

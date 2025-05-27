@@ -6,17 +6,17 @@ from functions.operations.reports import *
 def print_report_menu():
     while True:
         print("============================================================================")
-        print("\t1. View number of members per organization")
-        print("\t2. View all members of an organization")
-        print("\t3. View members with unpaid or late fees (by semester & academic year)")
-        print("\t4. View organizations of a member (by membership ID)")
-        print("\t5. View a member's unpaid fees (by student number)")
-        print("\t6. List all active members")
-        print("\t7. View members with unpaid or late fees")
-        print("\t8. View committee roles per organization")
-        print("\t9. View total fee amount collected per organization")
-        print("\t10. View all students")
-        print("\t0 - Exit")
+        print("\t1 - View number of members per organization")
+        print("\t2 - View all members of an organization")
+        print("\t3 - View members with unpaid or late fees (by semester & academic year)")
+        print("\t4 - View organizations of a member (by membership ID)")
+        print("\t5 - View a member's unpaid fees (by student number)")
+        print("\t6 - List all active members")
+        print("\t7 - View members with unpaid or late fees")
+        print("\t8 - View committee roles per organization")
+        print("\t9 - View total fee amount collected per organization")
+        print("\t10 - View all students")
+        print("\t0 - Back to Main Menu")
         print
 
         choice = input("Choose an option: ").strip()

@@ -1,6 +1,35 @@
 import mysql.connector
 from database.connection import connect_to_server
    
+def organization_menu():
+    while True:
+        print("\n====== Organization Management ======")
+        print("1 - Add Organization")
+        print("2 - Add Member to Organization")  # Placeholder
+        print("3 - Update Organization")
+        print("4 - Delete Organization")
+        print("5 - Search Organization")
+        print("0 - Back to Main Menu")
+
+        choice = input("Choose an option: ").strip()
+
+        if choice == '1':
+            add_organization()
+        elif choice == '2':
+            print("\nFeature not implemented yet.")
+            # add_member_to_organization()  # Placeholder
+        elif choice == '3':
+            update_organization()
+        elif choice == '4':
+            delete_organization()
+        elif choice == '5':
+            search_organization()
+        elif choice == '0':
+            print("Returning to main menu...")
+            break
+        else:
+            print("Invalid option. Please select a number between 1 and 6.")
+
 def add_organization():
     print("\n--- Add Organization ---")
     org_name = input("Enter organization name: ").strip()

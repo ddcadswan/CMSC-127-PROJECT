@@ -19,7 +19,7 @@ def fees_menu():
         print("5. Update Fee Payment Status")
         print("0. Back to Main Menu")
         
-        choice = input("Enter choice: ")
+        choice = input("Choose an option: ")
         
         if choice == '1':
             add_fee_to_organization()
