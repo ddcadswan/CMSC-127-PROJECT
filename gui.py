@@ -3,7 +3,7 @@ import mysql.connector
 from database.connection import connect_to_server
 
 import tkinter as tk
-from tkinter import messagebox
+from tkinter import messagebox, ttk
 from functions.operations.reports import (
     view_member_count, view_all_members, view_members_unpaid_fees,
     view_member_orgs, view_member_unpaid_fees, list_active_members,
@@ -26,56 +26,302 @@ def capture_output(func, *args):
 class MainApp(tk.Tk):
     def __init__(self):
         super().__init__()
-        self.title("Student Org Management")
-        self.geometry("800x600")
+        self.title("Student Organization Management System")
+        self.geometry("1000x700")
+        self.configure(bg='#f0f2f5')
+        
+        # Configure style
+        self.setup_styles()
+        
+        # Create header
+        self.create_header()
+        
+        # Create main content area
+        self.create_main_content()
 
-        self.current_frame = None
+    def setup_styles(self):
+        """Configure modern styling for the application"""
+        # Configure ttk styles
+        style = ttk.Style()
+        style.theme_use('clam')
+        
+        # Custom button style
+        style.configure('Modern.TButton',
+                       background='#4a90e2',
+                       foreground='white',
+                       font=('Segoe UI', 10),
+                       borderwidth=0,
+                       focuscolor='none')
+        
+        style.map('Modern.TButton',
+                 background=[('active', '#357abd'),
+                           ('pressed', '#2968a3')])
+        
+        # Header button style
+        style.configure('Header.TButton',
+                       background='#2c3e50',
+                       foreground='white',
+                       font=('Segoe UI', 11, 'bold'),
+                       borderwidth=0,
+                       focuscolor='none')
+        
+        style.map('Header.TButton',
+                 background=[('active', '#34495e'),
+                           ('pressed', '#1a252f')])
 
-        title = tk.Label(self, text="Main Menu", font=("Arial", 16, "bold"))
-        title.pack(pady=10)
+    def create_header(self):
+        """Create modern header with gradient-like appearance"""
+        header_frame = tk.Frame(self, bg='#2c3e50', height=80)
+        header_frame.pack(fill='x', pady=(0, 20))
+        header_frame.pack_propagate(False)
+        
+        # Title
+        title_frame = tk.Frame(header_frame, bg='#2c3e50')
+        title_frame.pack(expand=True, fill='both')
+        
+        # Icon placeholder 
+        icon_label = tk.Label(title_frame, font=('Arial', 24), 
+                             bg='#2c3e50', fg='#ecf0f1')
+        icon_label.pack(side='left', padx=(20, 10), pady=15)
+        
+        # Title text
+        title_label = tk.Label(title_frame, text="Student Organization Management System", 
+                              font=('Segoe UI', 18, 'bold'), 
+                              bg='#2c3e50', fg='#ecf0f1')
+        title_label.pack(side='left', pady=20)
+        
+        # Subtitle
+        subtitle_label = tk.Label(title_frame, text="Manage members, organizations, and reports", 
+                                 font=('Segoe UI', 10), 
+                                 bg='#2c3e50', fg='#bdc3c7')
+        subtitle_label.pack(side='left', padx=(10, 0), pady=(25, 0))
 
-        button_frame = tk.Frame(self)
-        button_frame.pack(pady=10)
+    def create_main_content(self):
+        """Create the main content area with navigation and content panels"""
+        main_container = tk.Frame(self, bg='#f0f2f5')
+        main_container.pack(fill='both', expand=True, padx=20, pady=(0, 20))
+        
+        # Navigation panel
+        self.create_navigation_panel(main_container)
+        
+        # Content panel
+        self.create_content_panel(main_container)
 
-        options = [
-            ("Setup Database & Tables", self.setup_database),
-            ("Insert Sample Data", self.insert_sample_data),
-            ("Add Member", self.add_member),
-            ("Search Options", self.search_options),
-            ("Delete Member", self.delete_member),
-            ("Generate Report", self.show_report_ui),
-            ("Exit", self.quit)
+    def create_navigation_panel(self, parent):
+        """Create modern navigation sidebar"""
+        nav_frame = tk.Frame(parent, bg='white', width=280, relief='solid', bd=1)
+        nav_frame.pack(side='left', fill='y', padx=(0, 20))
+        nav_frame.pack_propagate(False)
+        
+        # Navigation title
+        nav_title = tk.Label(nav_frame, text="Main Menu", 
+                            font=('Segoe UI', 14, 'bold'), 
+                            bg='white', fg='#2c3e50')
+        nav_title.pack(pady=(20, 15), padx=20)
+        
+        # Navigation buttons
+        nav_options = [
+            (" Setup Database & Tables", self.setup_database, "#e74c3c"),
+            (" Insert Sample Data", self.insert_sample_data, "#f39c12"),
+            (" Add Member", self.add_member, "#27ae60"),
+            (" Search Options", self.search_options, "#3498db"),
+            (" Delete Member", self.delete_member, "#e67e22"),
+            (" Generate Report", self.show_report_ui, "#9b59b6"),
+            (" Exit", self.quit, "#95a5a6")
         ]
+        
+        for text, command, color in nav_options:
+            btn_frame = tk.Frame(nav_frame, bg='white')
+            btn_frame.pack(fill='x', padx=15, pady=3)
+            
+            btn = tk.Button(btn_frame, text=text, 
+                           font=('Segoe UI', 10),
+                           bg=color, fg='white',
+                           relief='flat', bd=0,
+                           cursor='hand2',
+                           anchor='w',
+                           command=command)
+            btn.pack(fill='x', ipady=8)
+            
+            # Hover effects
+            def on_enter(e, button=btn, original_color=color):
+                button.configure(bg=self.darken_color(original_color))
+            
+            def on_leave(e, button=btn, original_color=color):
+                button.configure(bg=original_color)
+            
+            btn.bind("<Enter>", on_enter)
+            btn.bind("<Leave>", on_leave)
 
-        for label, action in options:
-            tk.Button(button_frame, text=label, width=30, command=action).pack(pady=3)
+    def darken_color(self, color):
+        """Darken a hex color for hover effect"""
+        color_map = {
+            "#e74c3c": "#c0392b",
+            "#f39c12": "#d68910",
+            "#27ae60": "#229954",
+            "#3498db": "#2980b9",
+            "#e67e22": "#d35400",
+            "#9b59b6": "#8e44ad",
+            "#95a5a6": "#7f8c8d"
+        }
+        return color_map.get(color, color)
 
-        self.content_frame = tk.Frame(self)
-        self.content_frame.pack(fill="both", expand=True, padx=10, pady=10)
+    def create_content_panel(self, parent):
+        """Create main content display area"""
+        content_container = tk.Frame(parent, bg='#f0f2f5')
+        content_container.pack(side='right', fill='both', expand=True)
+        
+        # Welcome panel
+        self.content_frame = tk.Frame(content_container, bg='white', relief='solid', bd=1)
+        self.content_frame.pack(fill='both', expand=True)
+        
+        self.show_welcome_screen()
+
+    def show_welcome_screen(self):
+        """Display welcome screen with system overview"""
+        self.clear_content()
+        
+        # Welcome header
+        welcome_frame = tk.Frame(self.content_frame, bg='white')
+        welcome_frame.pack(fill='x', padx=30, pady=30)
+        
+        welcome_title = tk.Label(welcome_frame, text="Welcome to Student Organization Management", 
+                                font=('Segoe UI', 16, 'bold'), 
+                                bg='white', fg='#2c3e50')
+        welcome_title.pack()
+        
+        welcome_subtitle = tk.Label(welcome_frame, text="Select an option from the menu to get started", 
+                                   font=('Segoe UI', 11), 
+                                   bg='white', fg='#7f8c8d')
+        welcome_subtitle.pack(pady=(5, 0))
+        
+        # Feature cards
+        cards_frame = tk.Frame(self.content_frame, bg='white')
+        cards_frame.pack(fill='both', expand=True, padx=30, pady=(0, 30))
+        
+        features = [
+            (" Member Management", "Add, search, and manage student members"),
+            (" Organization Tracking", "Track member organizations and roles"),
+            (" Fee Management", "Monitor payment status and generate reports"),
+            (" Comprehensive Reports", "Generate detailed analytics and reports")
+        ]
+        
+        for i, (title, desc) in enumerate(features):
+            row = i // 2
+            col = i % 2
+            
+            card = tk.Frame(cards_frame, bg='#f8f9fa', relief='solid', bd=1)
+            card.grid(row=row, column=col, padx=10, pady=10, sticky='nsew', ipadx=20, ipady=15)
+            
+            card_title = tk.Label(card, text=title, 
+                                 font=('Segoe UI', 12, 'bold'), 
+                                 bg='#f8f9fa', fg='#2c3e50')
+            card_title.pack()
+            
+            card_desc = tk.Label(card, text=desc, 
+                                font=('Segoe UI', 9), 
+                                bg='#f8f9fa', fg='#7f8c8d',
+                                wraplength=200)
+            card_desc.pack(pady=(5, 0))
+        
+        # Configure grid weights
+        cards_frame.grid_columnconfigure(0, weight=1)
+        cards_frame.grid_columnconfigure(1, weight=1)
 
     def clear_content(self):
         for widget in self.content_frame.winfo_children():
             widget.destroy()
 
+    def create_form_section(self, title, fields):
+        """Create a styled form section"""
+        # Header
+        header_frame = tk.Frame(self.content_frame, bg='white')
+        header_frame.pack(fill='x', padx=30, pady=(30, 20))
+        
+        title_label = tk.Label(header_frame, text=title, 
+                              font=('Segoe UI', 16, 'bold'), 
+                              bg='white', fg='#2c3e50')
+        title_label.pack()
+        
+        # Form container
+        form_frame = tk.Frame(self.content_frame, bg='white')
+        form_frame.pack(fill='x', padx=30, pady=(0, 20))
+        
+        entries = {}
+        for field in fields:
+            field_frame = tk.Frame(form_frame, bg='white')
+            field_frame.pack(fill='x', pady=8)
+            
+            label = tk.Label(field_frame, text=field, 
+                           font=('Segoe UI', 10, 'bold'), 
+                           bg='white', fg='#34495e')
+            label.pack(anchor='w')
+            
+            entry = tk.Entry(field_frame, font=('Segoe UI', 10), 
+                           relief='solid', bd=1, bg='#f8f9fa')
+            entry.pack(fill='x', pady=(5, 0), ipady=5)
+            entries[field] = entry
+        
+        return entries
+
+    def create_styled_button(self, parent, text, command, color="#4a90e2"):
+        """Create a styled button"""
+        btn = tk.Button(parent, text=text, 
+                       font=('Segoe UI', 10, 'bold'),
+                       bg=color, fg='white',
+                       relief='flat', bd=0,
+                       cursor='hand2',
+                       command=command)
+        btn.pack(pady=10, ipady=8, ipadx=20)
+        return btn
+
     def setup_database(self):
         self.clear_content()
-        tk.Label(self.content_frame, text="Database and tables set up.").pack()
+        
+        # Status display
+        status_frame = tk.Frame(self.content_frame, bg='white')
+        status_frame.pack(expand=True, fill='both', padx=30, pady=30)
+        
+        # Success message
+        icon_label = tk.Label(status_frame, font=('Arial', 48), bg='white')
+        icon_label.pack(pady=(50, 20))
+        
+        title_label = tk.Label(status_frame, text="Database Setup Complete", 
+                              font=('Segoe UI', 16, 'bold'), 
+                              bg='white', fg='#27ae60')
+        title_label.pack()
+        
+        desc_label = tk.Label(status_frame, text="Database and tables have been set up successfully.", 
+                             font=('Segoe UI', 11), 
+                             bg='white', fg='#7f8c8d')
+        desc_label.pack(pady=(10, 0))
 
     def insert_sample_data(self):
         self.clear_content()
-        tk.Label(self.content_frame, text="Sample data inserted.").pack()
+        
+        # Status display
+        status_frame = tk.Frame(self.content_frame, bg='white')
+        status_frame.pack(expand=True, fill='both', padx=30, pady=30)
+        
+        # Success message
+        icon_label = tk.Label(status_frame, font=('Arial', 48), bg='white')
+        icon_label.pack(pady=(50, 20))
+        
+        title_label = tk.Label(status_frame, text="Sample Data Inserted", 
+                              font=('Segoe UI', 16, 'bold'), 
+                              bg='white', fg='#f39c12')
+        title_label.pack()
+        
+        desc_label = tk.Label(status_frame, text="Sample data has been inserted successfully.", 
+                             font=('Segoe UI', 11), 
+                             bg='white', fg='#7f8c8d')
+        desc_label.pack(pady=(10, 0))
 
     def add_member(self):
         self.clear_content()
-        tk.Label(self.content_frame, text="Add New Member", font=("Arial", 14, "bold")).pack(pady=5)
-
+        
         labels = ["Student Number", "First Name", "Last Name", "Gender"]
-        entries = {}
-        for label in labels:
-            tk.Label(self.content_frame, text=label).pack()
-            entry = tk.Entry(self.content_frame)
-            entry.pack()
-            entries[label] = entry
+        entries = self.create_form_section("Add New Member", labels)
 
         def submit():
             values = [entries[label].get() for label in labels]
@@ -95,23 +341,56 @@ class MainApp(tk.Tk):
                     conn.commit()
                     conn.close()
                     messagebox.showinfo("Success", "Member added successfully.")
+                    # Clear form
+                    for entry in entries.values():
+                        entry.delete(0, tk.END)
                 except Exception as e:
                     messagebox.showerror("Error", str(e))
             else:
                 messagebox.showwarning("Input Error", "Please fill in all fields.")
 
-        tk.Button(self.content_frame, text="Submit", command=submit).pack(pady=10)
+        button_frame = tk.Frame(self.content_frame, bg='white')
+        button_frame.pack(padx=30)
+        self.create_styled_button(button_frame, "Add Member", submit, "#27ae60")
 
     def search_options(self):
         self.clear_content()
-        tk.Label(self.content_frame, text="Search Member", font=("Arial", 14, "bold")).pack(pady=5)
-
-        tk.Label(self.content_frame, text="Enter Student Number:").pack()
-        search_entry = tk.Entry(self.content_frame)
-        search_entry.pack()
-
-        output_box = tk.Text(self.content_frame, height=10, wrap="word")
-        output_box.pack(pady=10, fill="both", expand=True)
+        
+        # Header
+        header_frame = tk.Frame(self.content_frame, bg='white')
+        header_frame.pack(fill='x', padx=30, pady=(30, 20))
+        
+        title_label = tk.Label(header_frame, text="Search Member", 
+                              font=('Segoe UI', 16, 'bold'), 
+                              bg='white', fg='#2c3e50')
+        title_label.pack()
+        
+        # Search input
+        search_frame = tk.Frame(self.content_frame, bg='white')
+        search_frame.pack(fill='x', padx=30, pady=(0, 20))
+        
+        search_label = tk.Label(search_frame, text="Enter Student Number:", 
+                               font=('Segoe UI', 10, 'bold'), 
+                               bg='white', fg='#34495e')
+        search_label.pack(anchor='w')
+        
+        search_entry = tk.Entry(search_frame, font=('Segoe UI', 10), 
+                               relief='solid', bd=1, bg='#f8f9fa')
+        search_entry.pack(fill='x', pady=(5, 0), ipady=5)
+        
+        # Results area
+        results_frame = tk.Frame(self.content_frame, bg='white')
+        results_frame.pack(fill='both', expand=True, padx=30, pady=(0, 30))
+        
+        results_label = tk.Label(results_frame, text="Search Results:", 
+                                font=('Segoe UI', 10, 'bold'), 
+                                bg='white', fg='#34495e')
+        results_label.pack(anchor='w', pady=(0, 5))
+        
+        output_box = tk.Text(results_frame, height=12, wrap="word", 
+                            font=('Consolas', 9), relief='solid', bd=1,
+                            bg='#f8f9fa')
+        output_box.pack(fill='both', expand=True)
 
         def search():
             student_number = search_entry.get()
@@ -137,42 +416,87 @@ class MainApp(tk.Tk):
             else:
                 output_box.insert(tk.END, "[Missing input]")
 
-        tk.Button(self.content_frame, text="Search", command=search).pack(pady=5)
+        button_frame = tk.Frame(self.content_frame, bg='white')
+        button_frame.pack(padx=30)
+        self.create_styled_button(button_frame, "Search", search, "#3498db")
 
     def delete_member(self):
         self.clear_content()
-        tk.Label(self.content_frame, text="Delete Member", font=("Arial", 14, "bold")).pack(pady=5)
-
-        tk.Label(self.content_frame, text="Enter Student Number to Delete:").pack()
-        delete_entry = tk.Entry(self.content_frame)
-        delete_entry.pack()
+        
+        # Header
+        header_frame = tk.Frame(self.content_frame, bg='white')
+        header_frame.pack(fill='x', padx=30, pady=(30, 20))
+        
+        title_label = tk.Label(header_frame, text="Delete Member", 
+                              font=('Segoe UI', 16, 'bold'), 
+                              bg='white', fg='#2c3e50')
+        title_label.pack()
+        
+        # Warning message
+        warning_frame = tk.Frame(self.content_frame, bg='#fff3cd', relief='solid', bd=1)
+        warning_frame.pack(fill='x', padx=30, pady=(0, 20))
+        
+        warning_label = tk.Label(warning_frame, text="⚠️ Warning: This action cannot be undone", 
+                                font=('Segoe UI', 10, 'bold'), 
+                                bg='#fff3cd', fg='#856404')
+        warning_label.pack(pady=10)
+        
+        # Delete input
+        delete_frame = tk.Frame(self.content_frame, bg='white')
+        delete_frame.pack(fill='x', padx=30, pady=(0, 20))
+        
+        delete_label = tk.Label(delete_frame, text="Enter Student Number to Delete:", 
+                               font=('Segoe UI', 10, 'bold'), 
+                               bg='white', fg='#34495e')
+        delete_label.pack(anchor='w')
+        
+        delete_entry = tk.Entry(delete_frame, font=('Segoe UI', 10), 
+                               relief='solid', bd=1, bg='#f8f9fa')
+        delete_entry.pack(fill='x', pady=(5, 0), ipady=5)
 
         def delete():
             student_number = delete_entry.get()
             if student_number:
-                try:
-                    conn = mysql.connector.connect(
-                        host="localhost",
-                        user="student_admin",
-                        password="iLove127!",
-                        database="student_org_database"
-                    )
-                    cursor = conn.cursor()
-                    cursor.execute("DELETE FROM member WHERE student_number = %s", (student_number,))
-                    conn.commit()
-                    conn.close()
-                    messagebox.showinfo("Deleted", "Member deleted successfully.")
-                except Exception as e:
-                    messagebox.showerror("Error", str(e))
+                # Confirmation dialog
+                if messagebox.askyesno("Confirm Delete", 
+                                     f"Are you sure you want to delete student {student_number}?"):
+                    try:
+                        conn = mysql.connector.connect(
+                            host="localhost",
+                            user="student_admin",
+                            password="iLove127!",
+                            database="student_org_database"
+                        )
+                        cursor = conn.cursor()
+                        cursor.execute("DELETE FROM member WHERE student_number = %s", (student_number,))
+                        conn.commit()
+                        conn.close()
+                        messagebox.showinfo("Deleted", "Member deleted successfully.")
+                        delete_entry.delete(0, tk.END)
+                    except Exception as e:
+                        messagebox.showerror("Error", str(e))
             else:
                 messagebox.showwarning("Missing Input", "Enter a student number.")
 
-        tk.Button(self.content_frame, text="Delete", command=delete).pack(pady=5)
+        button_frame = tk.Frame(self.content_frame, bg='white')
+        button_frame.pack(padx=30)
+        self.create_styled_button(button_frame, "Delete Member", delete, "#e74c3c")
 
     def show_report_ui(self):
         self.clear_content()
-
-        tk.Label(self.content_frame, text="Report Options", font=("Arial", 14, "bold")).pack(pady=5)
+        
+        # Header
+        header_frame = tk.Frame(self.content_frame, bg='white')
+        header_frame.pack(fill='x', padx=30, pady=(30, 20))
+        
+        title_label = tk.Label(header_frame, text="Generate Reports", 
+                              font=('Segoe UI', 16, 'bold'), 
+                              bg='white', fg='#2c3e50')
+        title_label.pack()
+        
+        # Reports grid
+        reports_frame = tk.Frame(self.content_frame, bg='white')
+        reports_frame.pack(fill='x', padx=30, pady=(0, 20))
 
         options = [
             ("1. View number of members per organization", lambda: self.run_report(view_member_count)),
@@ -187,11 +511,39 @@ class MainApp(tk.Tk):
             ("10. View all students", lambda: self.run_report(view_all_students))
         ]
 
-        for label, action in options:
-            tk.Button(self.content_frame, text=label, anchor="w", width=60, command=action).pack(pady=2)
+        for i, (label, action) in enumerate(options):
+            btn = tk.Button(reports_frame, text=label, 
+                           font=('Segoe UI', 9),
+                           bg='#f8f9fa', fg='#2c3e50',
+                           relief='solid', bd=1,
+                           cursor='hand2',
+                           anchor='w',
+                           command=action)
+            btn.pack(fill='x', pady=2, ipady=8, padx=5)
+            
+            # Hover effect
+            def on_enter(e, button=btn):
+                button.configure(bg='#e9ecef')
+            
+            def on_leave(e, button=btn):
+                button.configure(bg='#f8f9fa')
+            
+            btn.bind("<Enter>", on_enter)
+            btn.bind("<Leave>", on_leave)
 
-        self.output_box = tk.Text(self.content_frame, height=15, wrap="word")
-        self.output_box.pack(pady=10, fill="both", expand=True)
+        # Output area
+        output_frame = tk.Frame(self.content_frame, bg='white')
+        output_frame.pack(fill='both', expand=True, padx=30, pady=(0, 30))
+        
+        output_label = tk.Label(output_frame, text="Report Output:", 
+                               font=('Segoe UI', 10, 'bold'), 
+                               bg='white', fg='#34495e')
+        output_label.pack(anchor='w', pady=(0, 5))
+        
+        self.output_box = tk.Text(output_frame, height=12, wrap="word", 
+                                 font=('Consolas', 9), relief='solid', bd=1,
+                                 bg='#f8f9fa')
+        self.output_box.pack(fill='both', expand=True)
 
     def run_report(self, func):
         self.output_box.delete("1.0", tk.END)
@@ -203,15 +555,13 @@ class MainApp(tk.Tk):
 
     def report_members_by_org(self):
         self.clear_content()
-        tk.Label(self.content_frame, text="View Members by Organization", font=("Arial", 14, "bold")).pack(pady=5)
-
-        tk.Label(self.content_frame, text="Organization ID:").pack()
-        org_entry = tk.Entry(self.content_frame)
-        org_entry.pack()
-
-        tk.Label(self.content_frame, text="Sort By (1=role, 2=status, 3=gender...):").pack()
-        sort_entry = tk.Entry(self.content_frame)
-        sort_entry.pack()
+        
+        # Form fields
+        fields = ["Organization ID", "Sort By (1=role, 2=status, 3=gender...)"]
+        entries = self.create_form_section("View Members by Organization", fields)
+        
+        org_entry = entries["Organization ID"]
+        sort_entry = entries["Sort By (1=role, 2=status, 3=gender...)"]
 
         def run_custom_query():
             org_id = org_entry.get()
@@ -233,22 +583,32 @@ class MainApp(tk.Tk):
             self.output_box.delete("1.0", tk.END)
             self.output_box.insert(tk.END, output)
 
-        tk.Button(self.content_frame, text="Run Report", command=run_custom_query).pack(pady=5)
-
-        self.output_box = tk.Text(self.content_frame, height=15, wrap="word")
-        self.output_box.pack(pady=10, fill="both", expand=True)
+        button_frame = tk.Frame(self.content_frame, bg='white')
+        button_frame.pack(padx=30)
+        self.create_styled_button(button_frame, "Run Report", run_custom_query, "#9b59b6")
+        
+        # Output area
+        output_frame = tk.Frame(self.content_frame, bg='white')
+        output_frame.pack(fill='both', expand=True, padx=30, pady=(20, 30))
+        
+        output_label = tk.Label(output_frame, text="Report Results:", 
+                               font=('Segoe UI', 10, 'bold'), 
+                               bg='white', fg='#34495e')
+        output_label.pack(anchor='w', pady=(0, 5))
+        
+        self.output_box = tk.Text(output_frame, height=12, wrap="word", 
+                                 font=('Consolas', 9), relief='solid', bd=1,
+                                 bg='#f8f9fa')
+        self.output_box.pack(fill='both', expand=True)
 
     def report_unpaid_by_semester(self):
         self.clear_content()
-        tk.Label(self.content_frame, text="Unpaid or Late Fees by Semester", font=("Arial", 14, "bold")).pack(pady=5)
-
-        tk.Label(self.content_frame, text="Semester (e.g., 2nd):").pack()
-        semester_entry = tk.Entry(self.content_frame)
-        semester_entry.pack()
-
-        tk.Label(self.content_frame, text="Academic Year (e.g., 2024-2025):").pack()
-        year_entry = tk.Entry(self.content_frame)
-        year_entry.pack()
+        
+        fields = ["Semester (e.g., 2nd)", "Academic Year (e.g., 2024-2025)"]
+        entries = self.create_form_section("Unpaid or Late Fees by Semester", fields)
+        
+        semester_entry = entries["Semester (e.g., 2nd)"]
+        year_entry = entries["Academic Year (e.g., 2024-2025)"]
 
         def run_query():
             semester = semester_entry.get()
@@ -277,18 +637,31 @@ class MainApp(tk.Tk):
             self.output_box.delete("1.0", tk.END)
             self.output_box.insert(tk.END, output)
 
-        tk.Button(self.content_frame, text="Run Report", command=run_query).pack(pady=5)
-
-        self.output_box = tk.Text(self.content_frame, height=15, wrap="word")
-        self.output_box.pack(pady=10, fill="both", expand=True)
+        button_frame = tk.Frame(self.content_frame, bg='white')
+        button_frame.pack(padx=30)
+        self.create_styled_button(button_frame, "Run Report", run_query, "#9b59b6")
+        
+        # Output area
+        output_frame = tk.Frame(self.content_frame, bg='white')
+        output_frame.pack(fill='both', expand=True, padx=30, pady=(20, 30))
+        
+        output_label = tk.Label(output_frame, text="Report Results:", 
+                               font=('Segoe UI', 10, 'bold'), 
+                               bg='white', fg='#34495e')
+        output_label.pack(anchor='w', pady=(0, 5))
+        
+        self.output_box = tk.Text(output_frame, height=12, wrap="word", 
+                                 font=('Consolas', 9), relief='solid', bd=1,
+                                 bg='#f8f9fa')
+        self.output_box.pack(fill='both', expand=True)
 
     def report_member_orgs(self):
         self.clear_content()
-        tk.Label(self.content_frame, text="View Organizations of a Member", font=("Arial", 14, "bold")).pack(pady=5)
-
-        tk.Label(self.content_frame, text="Membership ID:").pack()
-        id_entry = tk.Entry(self.content_frame)
-        id_entry.pack()
+        
+        fields = ["Membership ID"]
+        entries = self.create_form_section("View Organizations of a Member", fields)
+        
+        id_entry = entries["Membership ID"]
 
         def run_query():
             membership_id = id_entry.get()
@@ -314,17 +687,31 @@ class MainApp(tk.Tk):
             self.output_box.delete("1.0", tk.END)
             self.output_box.insert(tk.END, output)
 
-        tk.Button(self.content_frame, text="Run Report", command=run_query).pack(pady=5)
-        self.output_box = tk.Text(self.content_frame, height=15, wrap="word")
-        self.output_box.pack(pady=10, fill="both", expand=True)
+        button_frame = tk.Frame(self.content_frame, bg='white')
+        button_frame.pack(padx=30)
+        self.create_styled_button(button_frame, "Run Report", run_query, "#9b59b6")
+        
+        # Output area
+        output_frame = tk.Frame(self.content_frame, bg='white')
+        output_frame.pack(fill='both', expand=True, padx=30, pady=(20, 30))
+        
+        output_label = tk.Label(output_frame, text="Report Results:", 
+                               font=('Segoe UI', 10, 'bold'), 
+                               bg='white', fg='#34495e')
+        output_label.pack(anchor='w', pady=(0, 5))
+        
+        self.output_box = tk.Text(output_frame, height=12, wrap="word", 
+                                 font=('Consolas', 9), relief='solid', bd=1,
+                                 bg='#f8f9fa')
+        self.output_box.pack(fill='both', expand=True)
 
     def report_unpaid_by_student(self):
         self.clear_content()
-        tk.Label(self.content_frame, text="Unpaid/Late Fees by Student Number", font=("Arial", 14, "bold")).pack(pady=5)
-
-        tk.Label(self.content_frame, text="Student Number:").pack()
-        student_entry = tk.Entry(self.content_frame)
-        student_entry.pack()
+        
+        fields = ["Student Number"]
+        entries = self.create_form_section("Unpaid/Late Fees by Student Number", fields)
+        
+        student_entry = entries["Student Number"]
 
         def run_query():
             student_number = student_entry.get()
@@ -351,9 +738,23 @@ class MainApp(tk.Tk):
             self.output_box.delete("1.0", tk.END)
             self.output_box.insert(tk.END, output)
 
-        tk.Button(self.content_frame, text="Run Report", command=run_query).pack(pady=5)
-        self.output_box = tk.Text(self.content_frame, height=15, wrap="word")
-        self.output_box.pack(pady=10, fill="both", expand=True)
+        button_frame = tk.Frame(self.content_frame, bg='white')
+        button_frame.pack(padx=30)
+        self.create_styled_button(button_frame, "Run Report", run_query, "#9b59b6")
+        
+        # Output area
+        output_frame = tk.Frame(self.content_frame, bg='white')
+        output_frame.pack(fill='both', expand=True, padx=30, pady=(20, 30))
+        
+        output_label = tk.Label(output_frame, text="Report Results:", 
+                               font=('Segoe UI', 10, 'bold'), 
+                               bg='white', fg='#34495e')
+        output_label.pack(anchor='w', pady=(0, 5))
+        
+        self.output_box = tk.Text(output_frame, height=12, wrap="word", 
+                                 font=('Consolas', 9), relief='solid', bd=1,
+                                 bg='#f8f9fa')
+        self.output_box.pack(fill='both', expand=True)
 
 if __name__ == "__main__":
     app = MainApp()
