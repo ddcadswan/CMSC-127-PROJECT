@@ -34,6 +34,8 @@ def add_member():
     finally:
         cursor.close()
         conn.close()
+
+
 def update_member():
     print("\n--- Update Member ---")
     try:

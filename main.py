@@ -3,6 +3,7 @@ from functions.operations.member_ops import add_member, update_member, delete_me
 from functions.utils.menu import print_report_menu
 from functions.operations.fee_ops import *
 from functions.operations.organization_ops import *
+from functions.operations.member_committee import *
 
 # ***********************
 # MAIN LOOP
@@ -19,7 +20,8 @@ def main():
         print("5 - Delete Member")
         print("6 - Organization Management")
         print("7 - Fees Management")
-        print("8 - Generate Report")
+        print("8 - Committee Management")
+        print("9 - Generate Report")
         print("0 - Exit")
 
         choice = input("Choose an option: ").strip()
@@ -41,6 +43,8 @@ def main():
         elif choice == "7":
             fees_menu()
         elif choice == "8":
+            committee_menu()
+        elif choice == "9":
             print_report_menu()
         elif choice == "0":
             print("Exiting.")
