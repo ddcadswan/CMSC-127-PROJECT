@@ -714,6 +714,7 @@ class MainApp(tk.Tk):
                     relief='flat', bd=0,
                     cursor='hand2',
                     command=command)
+        btn.pack(pady=10, ipady=8, ipadx=20)
         return btn
 
     def delete_member(self):
