@@ -867,11 +867,11 @@ class MainApp(tk.Tk):
         self.clear_content()
         
         # Form fields
-        fields = ["Organization ID", "Sort By (1=role, 2=status, 3=gender...)"]
+        fields = ["Organization ID", "Sort By (1=role, 2=status, 3=gender, 4=degree program, 5=batch, 6=committee)"]
         entries = self.create_form_section("View Members by Organization", fields)
         
         org_entry = entries["Organization ID"]
-        sort_entry = entries["Sort By (1=role, 2=status, 3=gender...)"]
+        sort_entry = entries["Sort By (1=role, 2=status, 3=gender, 4=degree program, 5=batch, 6=committee)"]
 
         def run_custom_query():
             org_id = org_entry.get()
